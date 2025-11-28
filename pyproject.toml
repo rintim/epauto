@@ -17,4 +17,8 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-dependencies = []
+dependencies = [
+    "click>=8.3.1",
+    "picows>=1.10.1",
+    "requests>=2.32.5",
+]
