@@ -1,0 +1,20 @@
+[project]
+name = "epauto"
+version = "0.3.0"
+description = "A simple auto-login script for Eportal."
+readme = "README.md"
+license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
+license-files = ["LICEN[CS]E*"]
+requires-python = ">=3.11"
+authors = [
+    { name = "Rintim" },
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = []
