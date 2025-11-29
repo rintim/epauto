@@ -1,0 +1,21 @@
+[base]
+user_agent = "epauto/0.3.0"
+retry_period = 5
+retry_period_diff = 5
+retry_period_max = 300
+
+[login]
+url = "https://example.com"
+username = "username"
+password = "password"
+
+[connect]
+test_url = "https://www.baidu.com"
+test_timeout = 5
+connect_url = "wss://echo.websocket.org"
+connect_ping_interval = 10
+connect_ping_timeout = 5
+
+[connect.auto-close]
+enable = false
+duration = 570
