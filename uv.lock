@@ -159,7 +159,7 @@ wheels = [
 [[package]]
 name = "epauto"
 version = "0.3.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "click" },
