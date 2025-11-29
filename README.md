@@ -50,7 +50,7 @@ epauto使用[TOML](https://toml.io/cn/v1.0.0)作为配置文件，默认读取�
 - (可选) [Docker](https://www.docker.com/) 28.0或更新
 - (可选) [Podman](https://podman.io/) 5.0或更新
 
-> 实际上uv和docker/podman的版本我也不确定，维护者按正在使用的工具链版本选了个大版本作为最低要求
+> 实际上uv和docker/podman的版本维护者也不确定，维护者按正在使用的工具链版本选了个大版本作为最低要求
 
 ## 方法1: 使用pip安装
 
