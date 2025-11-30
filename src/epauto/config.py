@@ -4,6 +4,7 @@ Structs and utility functions to load toml config for epauto.
 
 import tomllib
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
@@ -65,6 +66,7 @@ class Config:
             url=LoginURL(login["url"]),
             username=login["username"],
             password=login["password"],
+            type=LoginType(login.get("type", 0)),
         )
 
         # connect
@@ -111,6 +113,7 @@ class LoginConfig:
     url: LoginURL
     username: str
     password: str
+    type: LoginType
 
 
 @dataclass
@@ -152,3 +155,32 @@ class LoginURL:
 
         self.eportal = f"{url.scheme}://{url.hostname}:{port}/eportal/"
         self.portal_api = f"{self.eportal}portal/"
+
+
+class LoginType(Enum):
+    CAMPUS = 0
+    TELECOM = 1
+    UNICOM = 2
+    MOBILE = 3
+
+    def get_suffix(self) -> str:
+        match self:
+            case LoginType.CAMPUS:
+                return ""
+            case LoginType.TELECOM:
+                return "telecom"
+            case LoginType.UNICOM:
+                return "unicom"
+            case LoginType.MOBILE:
+                return "cmcc"
+
+    def get_name(self) -> str:
+        match self:
+            case LoginType.CAMPUS:
+                return "Campus Network"
+            case LoginType.TELECOM:
+                return "China Telecom"
+            case LoginType.UNICOM:
+                return "China Unicom"
+            case LoginType.MOBILE:
+                return "China Mobile"

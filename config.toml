@@ -8,6 +8,7 @@ retry_period_max = 300
 url = "https://example.com"
 username = "username"
 password = "password"
+type = 0
 
 [connect]
 test_url = "https://www.baidu.com"
