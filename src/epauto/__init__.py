@@ -7,10 +7,10 @@ Copyright (c) 2025 Rintim. Licensed under MIT License.
 import sys
 import click
 from pathlib import Path
-from typing import Optional
 
 from .bootstrap import bootstrap
 from .config import Config
+# from .loop import execute
 
 __all__ = ["__version__", "main"]
 __version__ = "0.3.0"
@@ -43,7 +43,14 @@ def main(version: bool, config: Path) -> None:
         click.echo(f"Error: Failed to load configuration: {e}", err=True)
         sys.exit(1)
 
-    bootstrap()
+    loop = bootstrap()
+
+    try:
+        # loop.create_task(execute())
+        loop.run_forever()
+    finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()
 
 
 def print_version():

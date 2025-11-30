@@ -1,11 +1,17 @@
 """ """
 
+import asyncio
+
 __all__ = ["bootstrap"]
 
 
-def bootstrap() -> None:
+def bootstrap() -> asyncio.AbstractEventLoop:
+    loop = asyncio.new_event_loop()
+
     set_logger()
-    set_signal()
+    set_signal(loop)
+
+    return loop
 
 
 def set_logger() -> None:
@@ -40,9 +46,25 @@ def set_logger() -> None:
     dictConfig(config)
 
 
-def set_signal() -> None:
+def set_signal(loop: asyncio.AbstractEventLoop) -> None:
     import signal
-    import sys
 
-    signal.signal(signal.SIGINT, lambda *_: sys.exit())
-    signal.signal(signal.SIGTERM, lambda *_: sys.exit())
+    async def exit_app():
+        tasks = asyncio.all_tasks(loop)
+
+        for task in tasks:
+            task.cancel()
+
+        for task in tasks:
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+
+        loop.stop()
+
+    def handler():
+        asyncio.ensure_future(exit_app())
+
+    loop.add_signal_handler(signal.SIGINT, handler)
+    loop.add_signal_handler(signal.SIGTERM, handler)
