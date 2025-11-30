@@ -6,6 +6,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -61,7 +62,7 @@ class Config:
             )
 
         login_cfg = LoginConfig(
-            url=login["url"],
+            url=LoginURL(login["url"]),
             username=login["username"],
             password=login["password"],
         )
@@ -107,7 +108,7 @@ class BaseConfig:
 
 @dataclass
 class LoginConfig:
-    url: str
+    url: LoginURL
     username: str
     password: str
 
@@ -126,3 +127,28 @@ class ConnectConfig:
 class ConnectAutoCloseConfig:
     enable: bool
     duration: int
+
+
+@dataclass(init=False)
+class LoginURL:
+    root: str
+    host: str
+    path: str
+    eportal: str
+    portal_api: str
+
+    def __init__(self, root: str) -> None:
+        self.root = root
+        self.update_suburls()
+
+    def update_suburls(self) -> None:
+        url = urlparse(self.root)
+        port = 802 if url.scheme == "https" else 801
+
+        self.host = f"{url.scheme}://{url.hostname}/"
+        if url.port is not None:
+            self.host = f"{url.scheme}://{url.hostname}:{url.port}/"
+        self.path = f"{self.host}drcom/"
+
+        self.eportal = f"{url.scheme}://{url.hostname}:{port}/eportal/"
+        self.portal_api = f"{self.eportal}portal/"
