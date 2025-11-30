@@ -6,7 +6,6 @@ Copyright (c) 2025 Rintim. Licensed under MIT License.
 
 import sys
 import click
-import signal
 from pathlib import Path
 from typing import Optional
 
@@ -19,17 +18,16 @@ __version__ = "0.3.0"
 
 @click.command()
 @click.option(
-    "--config", type=click.Path(path_type=Path), help="Path to configuration file."
+    "--config",
+    type=click.Path(path_type=Path),
+    default="config.toml",
+    help="Path to configuration file.",
 )
 @click.option("--version", is_flag=True, help="Print epauto version.")
-def main(version: bool, config: Optional[Path]) -> None:
+def main(version: bool, config: Path) -> None:
     if version:
         print_version()
         return
-
-    if config is None:
-        config = Path("config.toml")
-    config = config.resolve()
 
     if not config.exists():
         click.echo(
@@ -46,8 +44,6 @@ def main(version: bool, config: Optional[Path]) -> None:
         sys.exit(1)
 
     bootstrap()
-
-    # click.echo(cfg)
 
 
 def print_version():
