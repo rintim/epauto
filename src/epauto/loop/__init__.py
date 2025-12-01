@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from gc import collect
 
 from . import check, connect, login
 from .state import LoopState
@@ -38,6 +39,7 @@ async def execute(cfg: Config):
                 logger.debug(f"Executing state: {state}.")
                 next_state = await executor(cfg)
                 state = next_state
+                collect()
 
     logger.debug("Execution loop has ended.")
     loop = asyncio.get_event_loop()
