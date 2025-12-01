@@ -30,5 +30,5 @@ async def execute(cfg: Config) -> LoopState:
         return LoopState.LOGIN
 
     except Exception as e:
-        logger.info('Check failed: [%s]"%s". Proceeding to login.', type(e).__name__, e)
+        logger.info('Check failed: %s("%s"). Proceeding to login.', type(e).__name__, e)
         return LoopState.LOGIN

@@ -24,7 +24,7 @@ async def execute(cfg: Config) -> LoopState:
 
         except Exception as e:
             logger.error(
-                'Logging failed: [%s]"%s". Retrying in %d seconds...',
+                'Logging failed: %s("%s"). Retrying in %d seconds...',
                 type(e).__name__,
                 e,
                 retry_period,
