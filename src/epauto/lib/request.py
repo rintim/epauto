@@ -5,7 +5,7 @@ There's only JSONP request which is needed to encapsulate.
 """
 
 import math
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from collections import deque
 from random import random
 from typing import Optional
@@ -59,7 +59,9 @@ async def jsonp(
     else:
         full_url = f"{url}?{param_url}"
 
-    async with ClientSession(headers=headers) as session:
+    async with ClientSession(
+        headers=headers, timeout=ClientTimeout(total=5)
+    ) as session:
         async with session.get(full_url) as response:
             text = await response.text()
             return decode(text, name=name)
