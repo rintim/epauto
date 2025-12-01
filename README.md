@@ -28,9 +28,9 @@ $ epauto --help
 Usage: epauto [OPTIONS]
 
 Options:
-  --config PATH  Path to configuration file.
-  --version      Print epauto version.
-  --help         Show this message and exit.
+  -c, --config PATH  Path to configuration file.
+  -V, --version      Print epauto version.
+  --help             Show this message and exit.
 ```
 
 要使用epauto，你需要提供校园网的登录网址、用户名和密码来让epauto通过模拟浏览器网页登陆的方式来登录校园网
@@ -58,7 +58,9 @@ epauto使用[TOML](https://toml.io/cn/v1.0.0)作为配置文件，默认读取�
 
 ## 方法2: 使用`git clone`
 
-这个方法适合所有想要更改代码的用户:
+这个方法适合所有想要更改代码的用户
+
+在安装uv后，执行:
 
 `$ git clone https://github.com/rintim/epauto.git`
 
@@ -87,7 +89,7 @@ $ cd epauto
 $ docker/podman build . -t "epauto:0.3.0"
 
 -- 等待打包完后运行
-$ docker/podman run -it "epauto:0.3.0" -v $config.toml:/app/config.toml
+$ docker/podman run -it -v $config.toml:/etc/opt/epauto.toml "epauto:0.3.0"
 ```
 
 # 贡献
