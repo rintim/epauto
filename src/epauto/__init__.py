@@ -10,7 +10,7 @@ from pathlib import Path
 
 from .bootstrap import bootstrap
 from .config import Config
-# from .loop import execute
+from .loop import execute
 
 __all__ = ["__version__", "main"]
 __version__ = "0.3.0"
@@ -46,7 +46,7 @@ def main(version: bool, config: Path) -> None:
     loop = bootstrap()
 
     try:
-        # loop.create_task(execute())
+        loop.create_task(execute(cfg))
         loop.run_forever()
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
