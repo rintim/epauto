@@ -29,6 +29,9 @@ async def execute(cfg: Config) -> LoopState:
                     heartbeat=cfg.connect.connect_ping_interval,
                 ) as ws:
                     await connect_handler(ws, cfg)
+        except TimeoutError:
+            logger.error("WebSocket connection Timeout.")
+            return revert_to_checking()
 
         except Exception as e:
             logger.error('WebSocket connection failed: [%s]"%s"', type(e).__name__, e)
