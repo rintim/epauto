@@ -47,8 +47,8 @@ async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> None:
             async for msg in ws:
                 if msg.type == WSMsgType.TEXT:
                     logger.info("Received message: %s", msg.data)
-                elif e := (msg.type == WSMsgType.ERROR and ws.exception()):
-                    raise e
+                elif msg.type == WSMsgType.ERROR:
+                    raise Exception(f"WebSocket error: {msg.data}")
 
     except asyncio.TimeoutError:
         logger.info("The Server is closing the connection. Close and reconnecting...")
