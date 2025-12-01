@@ -23,7 +23,12 @@ async def execute(cfg: Config) -> LoopState:
             return LoopState.CHECK
 
         except Exception as e:
-            logger.error(f"Logging failed: {e}. Retrying in {retry_period} seconds...")
+            logger.error(
+                'Logging failed: [%s]"%s". Retrying in %d seconds...',
+                type(e).__name__,
+                e,
+                retry_period,
+            )
             await asyncio.sleep(retry_period)
             retry_period += cfg.base.retry_period_diff
             if retry_period > cfg.base.retry_period_max:
@@ -51,6 +56,7 @@ async def execute_path_of_pain(cfg: Config) -> str:
         return info
 
     ip = info
+    logger.info("Fetched IP info: %s", ip)
 
     base_url = path_url if login_method == 0 else portal_api
     await login(ip, cfg, base_url, login_method, header)
@@ -129,7 +135,7 @@ async def login(
         "wlan_user_mac": "000000000000",
         "wlan_ac_ip": "",
         "wlan_ac_name": "",
-        "terminal_type": 1,
+        "terminal_type": "1",
     }
 
     result = None

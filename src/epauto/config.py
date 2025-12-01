@@ -79,7 +79,7 @@ class Config:
         connect_ping_timeout = connect.get("connect_ping_timeout", 5)
 
         # auto_close
-        auto_close = connect.get("auto_close", {})
+        auto_close = connect.get("auto-close", {})
 
         auto_close_enable = auto_close.get("enable", False)
         auto_close_duration = auto_close.get("duration", 570)

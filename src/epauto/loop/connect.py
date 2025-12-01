@@ -3,7 +3,6 @@ import logging
 from aiohttp import (
     ClientSession,
     ClientTimeout,
-    ClientWSTimeout,
     ClientWebSocketResponse,
     WSMsgType,
 )
@@ -32,7 +31,7 @@ async def execute(cfg: Config) -> LoopState:
                     await connect_handler(ws, cfg)
 
         except Exception as e:
-            logger.error(f"WebSocket connection failed: {e}")
+            logger.error('WebSocket connection failed: [%s]"%s"', type(e).__name__, e)
             return revert_to_checking()
 
 
@@ -44,9 +43,9 @@ async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> None:
         async with asyncio.timeout(timeout):
             async for msg in ws:
                 if msg.type == WSMsgType.TEXT:
-                    logger.info(f"Received message: {msg.data}")
-                elif msg.type == WSMsgType.ERROR:
-                    raise Exception(f"WebSocket error: {ws.exception()}")
+                    logger.info("Received message: %s", msg.data)
+                elif e := (msg.type == WSMsgType.ERROR and ws.exception()):
+                    raise e
 
     except asyncio.TimeoutError:
         logger.info("The Server is closing the connection. Close and reconnecting...")

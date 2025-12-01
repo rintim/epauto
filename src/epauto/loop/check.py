@@ -29,5 +29,5 @@ async def execute(cfg: Config) -> LoopState:
                 raise Exception(f"Connection to {cfg.connect.test_url} timed out.")
 
     except Exception as e:
-        logger.info(f"Check failed: {e}. Proceeding to login.")
+        logger.info('Check failed: [%s]"%s". Proceeding to login.', type(e).__name__, e)
         return LoopState.LOGIN
