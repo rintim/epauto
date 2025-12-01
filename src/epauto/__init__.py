@@ -19,11 +19,12 @@ __version__ = "0.3.0"
 @click.command()
 @click.option(
     "--config",
+    "-c",
     type=click.Path(path_type=Path),
     default="config.toml",
     help="Path to configuration file.",
 )
-@click.option("--version", is_flag=True, help="Print epauto version.")
+@click.option("--version", "-V", is_flag=True, help="Print epauto version.")
 def main(version: bool, config: Path) -> None:
     if version:
         print_version()

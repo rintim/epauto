@@ -31,4 +31,4 @@ RUN set -eux \
 USER appuser
 WORKDIR /opt/epauto
 
-CMD ["/opt/epauto/.venv/bin/epauto", "--config", "/etc/opt/epauto.toml"]
+CMD [".venv/bin/epauto", "-c", "/etc/opt/epauto.toml"]
