@@ -1,6 +1,6 @@
 [project]
 name = "epauto"
-version = "0.3.0"
+version = "0.4.0"
 description = "A simple auto-login script for Eportal."
 readme = "README.md"
 license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"

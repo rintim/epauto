@@ -13,7 +13,7 @@ from .config import Config
 from .loop import execute
 
 __all__ = ["__version__", "main"]
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 
 @click.command()
