@@ -27,11 +27,7 @@ __version__ = "0.4.0"
 @click.version_option(
     __version__, package_name="epauto", message="%(package)s %(version)s"
 )
-def main(version: bool, config: Path) -> None:
-    if version:
-        print_version()
-        return
-
+def main(config: Path):
     if not config.exists():
         click.echo(
             f"Error: Configuration file '{config}' does not exist.",
