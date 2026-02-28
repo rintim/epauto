@@ -24,7 +24,9 @@ __version__ = "0.4.0"
     default="config.toml",
     help="Path to configuration file.",
 )
-@click.option("--version", "-V", is_flag=True, help="Print epauto version.")
+@click.version_option(
+    __version__, package_name="epauto", message="%(package)s %(version)s"
+)
 def main(version: bool, config: Path) -> None:
     if version:
         print_version()
@@ -52,8 +54,3 @@ def main(version: bool, config: Path) -> None:
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
-
-
-def print_version():
-    version = f"epauto {__version__}"
-    click.echo(version)
