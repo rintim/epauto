@@ -3,8 +3,8 @@ Entrypoint for epauto.
 """
 
 import sys
-from . import main
+from . import cli
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(cli.main())

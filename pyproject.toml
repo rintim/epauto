@@ -27,4 +27,4 @@ requires = ["uv_build >= 0.9.9"]
 build-backend = "uv_build"
 
 [project.scripts]
-epauto = "epauto:main"
+epauto = "epauto.cli:main"
