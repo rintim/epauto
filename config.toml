@@ -1,5 +1,5 @@
 [base]
-user_agent = "epauto/0.3.0"
+user_agent = "epauto/0.4.0"
 retry_period = 5
 retry_period_diff = 5
 retry_period_max = 300
