@@ -89,7 +89,7 @@ $ cd epauto
 $ docker/podman build . -t "epauto:0.4.0"
 
 -- 等待打包完后运行
-$ docker/podman run -it -v $config.toml:/etc/opt/epauto.toml "epauto:0.4.0"
+$ docker/podman run -it -v $config.toml:/app/config.toml "epauto:0.4.0"
 ```
 
 # 贡献
