@@ -19,13 +19,13 @@ async def execute(cfg: Config):
         LoopState.CONNECT: connect.execute,
     }
 
-    logger.info("Starting execution loop.")
     while True:
         match state:
             case LoopState.INIT:
                 # In fact I don't know what to write here
                 # Remain for future
                 # Currently just transition to CHECK
+                logger.info("Starting execution loop.")
                 state = LoopState.CHECK
             case _:
                 executor = EXECUTOR_MAP[state]
