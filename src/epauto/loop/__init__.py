@@ -1,3 +1,4 @@
+import gc
 import asyncio
 import logging
 
@@ -37,6 +38,7 @@ async def execute(cfg: Config):
 
                 logger.debug(f"Executing state: {state}.")
                 next_state = await executor(cfg)
+                gc.collect()
                 state = next_state
 
     logger.debug("Execution loop has ended.")
