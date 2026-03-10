@@ -72,11 +72,16 @@ class Config:
         # connect
         connect: dict[str, Any] = data.get("connect", {})
 
-        test_url = connect.get("test_url", "https://www.baidu.com")
+        test_url = connect.get("test_url")
         test_timeout = connect.get("test_timeout", 5)
-        connect_url = connect.get("connect_url", "wss://echo.websocket.org")
+        connect_url = connect.get("connect_url")
         connect_ping_interval = connect.get("connect_ping_interval", 10)
         connect_ping_timeout = connect.get("connect_ping_timeout", 5)
+
+        if test_url is None:
+            raise ValueError("connect.test_url is required in configuration.")
+        if connect_url is None:
+            raise ValueError("connect.connect_url is required in configuration.")
 
         # auto_close
         auto_close = connect.get("auto-close", {})
