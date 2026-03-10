@@ -3,7 +3,7 @@ import logging
 from aiohttp import ClientSession, ClientTimeout
 
 from .state import LoopState
-from ..config import Config
+from ..config import Config, LoginType
 from ..lib.base import encode
 from ..lib.request import jsonp
 
@@ -122,7 +122,7 @@ async def login(
     login_url = f"{base_url}login"
 
     username = None
-    if cfg.login.type == 0:
+    if cfg.login.type == LoginType.CAMPUS:
         username = cfg.login.username
     else:
         username = f"{cfg.login.username}@{cfg.login.type.get_suffix()}"
