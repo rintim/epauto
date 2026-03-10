@@ -30,6 +30,9 @@ def main(config: Path):
     cfg = None
     try:
         cfg = Config.init(config)
+    except KeyError as e:
+        click.echo(f"Error: Missing required configuration field: {e}", err=True)
+        sys.exit(1)
     except ValueError as e:
         click.echo(f"Error: Failed to load configuration: {e}", err=True)
         sys.exit(1)
