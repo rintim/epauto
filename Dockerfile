@@ -6,8 +6,8 @@ ENV UV_LINK_MODE=copy
 WORKDIR /app
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=uv.lock,target=uv.lock,relabel=shared \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml,relabel=shared \
     set -eux \
     && uv sync --locked --no-install-project --no-editable
 
@@ -22,12 +22,6 @@ COPY --from=builder /app/.venv /app/.venv
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-RUN set -eux \
-    && groupadd --system --gid 999 nonroot \
-    && useradd --system --gid 999 --uid 999 -m appuser \
-    && chown -R appuser:nonroot /app/
-
-USER appuser
 WORKDIR /app
 
 CMD ["epauto", "-c", "config.toml"]
