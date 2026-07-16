@@ -4,10 +4,9 @@ Encapsulations for http requests.
 There's only JSONP request which is needed to encapsulate.
 """
 
-import math
 from aiohttp import ClientSession, ClientTimeout
 from collections import deque
-from random import random
+from random import randint
 from typing import Optional
 from urllib.parse import quote_plus, urlparse
 
@@ -48,11 +47,10 @@ async def jsonp(
             param_strs.appendleft(content)
         else:
             param_strs.append(content)
-    param_strs.append(f"v={math.floor(random() * 10000 + 500)}")
+    param_strs.append(f"v={randint(500, 10499)}")
     param_strs.append("lang=zh")
     param_url = "&".join(param_strs)
 
-    full_url = None
     parsed_url = urlparse(url)
     if len(parsed_url.query) > 0:
         full_url = f"{url}&{param_url}"

@@ -35,11 +35,12 @@ def decode(text: str, name: Optional[str] = None) -> Any:
             "Malformed JSONP payload, missing parentheses or incorrect order"
         )
 
-    callback_name = data[:lparen].strip()
-    if name is not None and callback_name != name:
-        raise ValueError(
-            f"Unexpected JSONP callback name: expected '{name}', got '{callback_name}'"
-        )
+    if name is not None:
+        callback_name = data[:lparen].strip()
+        if callback_name != name:
+            raise ValueError(
+                f"Unexpected JSONP callback name: expected '{name}', got '{callback_name}'"
+            )
 
     json_str = data[lparen + 1 : rparen].strip()
 
