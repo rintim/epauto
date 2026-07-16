@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import logging
 from aiohttp import (
     ClientSession,
@@ -36,6 +37,8 @@ async def execute(cfg: Config) -> LoopState:
         except Exception as e:
             logger.error('WebSocket connection failed: %s("%s")', type(e).__name__, e)
             return revert_to_checking()
+        finally:
+            gc.collect()
 
 
 async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> None:
