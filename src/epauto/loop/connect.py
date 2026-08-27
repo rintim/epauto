@@ -1,9 +1,7 @@
 import asyncio
-import gc
 import logging
 from aiohttp import (
     ClientSession,
-    ClientTimeout,
     ClientWebSocketResponse,
     WSMsgType,
 )
@@ -15,21 +13,14 @@ __all__ = ["execute"]
 logger = logging.getLogger(__name__)
 
 
-async def execute(cfg: Config) -> LoopState:
-    timeout = ClientTimeout(total=cfg.connect.connect_ping_timeout)
-
-    header = {
-        "User-Agent": cfg.base.user_agent,
-    }
-
+async def execute(cfg: Config, session: ClientSession) -> LoopState:
     while True:
         try:
-            async with ClientSession(headers=header, timeout=timeout) as session:
-                async with session.ws_connect(
-                    cfg.connect.connect_url,
-                    heartbeat=cfg.connect.connect_ping_interval,
-                ) as ws:
-                    await connect_handler(ws, cfg)
+            async with session.ws_connect(
+                cfg.connect.connect_url,
+                heartbeat=cfg.connect.connect_ping_interval,
+            ) as ws:
+                await connect_handler(ws, cfg)
         except TimeoutError:
             logger.error("WebSocket connection Timeout.")
             return revert_to_checking()
@@ -37,8 +28,6 @@ async def execute(cfg: Config) -> LoopState:
         except Exception as e:
             logger.error('WebSocket connection failed: %s("%s")', type(e).__name__, e)
             return revert_to_checking()
-        finally:
-            gc.collect()
 
 
 async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> None:

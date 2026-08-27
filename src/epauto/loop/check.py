@@ -8,22 +8,18 @@ __all__ = ["execute"]
 logger = logging.getLogger(__name__)
 
 
-async def execute(cfg: Config) -> LoopState:
+async def execute(cfg: Config, session: ClientSession) -> LoopState:
     logger.info("Try to check connectivity...")
     try:
-        header = {
-            "User-Agent": cfg.base.user_agent,
-        }
-
-        async with ClientSession(
-            headers=header, timeout=ClientTimeout(total=cfg.connect.test_timeout)
-        ) as session:
-            async with session.get(cfg.connect.test_url) as response:
-                if response.status == 200:
-                    logger.info("Already connected to the internet.")
-                    return LoopState.CONNECT
-                else:
-                    raise Exception(f"Unexpected status code: {response.status}")
+        async with session.get(
+            cfg.connect.test_url,
+            timeout=ClientTimeout(total=cfg.connect.test_timeout),
+        ) as response:
+            if response.status == 200:
+                logger.info("Already connected to the internet.")
+                return LoopState.CONNECT
+            else:
+                raise Exception(f"Unexpected status code: {response.status}")
 
     except TimeoutError:
         logger.info("Check failed: Timeout. Proceeding to login.")

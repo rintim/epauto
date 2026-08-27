@@ -11,12 +11,12 @@ __all__ = ["execute"]
 logger = logging.getLogger(__name__)
 
 
-async def execute(cfg: Config) -> LoopState:
+async def execute(cfg: Config, session: ClientSession) -> LoopState:
     retry_period = cfg.base.retry_period
 
     while True:
         try:
-            message = await execute_path_of_pain(cfg)
+            message = await execute_path_of_pain(cfg, session)
 
             logger.info(message)
             logger.info("Transitioning to CHECK state to retry.")
@@ -35,7 +35,7 @@ async def execute(cfg: Config) -> LoopState:
                 retry_period = cfg.base.retry_period_max
 
 
-async def execute_path_of_pain(cfg: Config) -> str:
+async def execute_path_of_pain(cfg: Config, session: ClientSession) -> str:
     root = cfg.login.url.root
     portal_api = cfg.login.url.portal_api
     path_url = cfg.login.url.path
@@ -46,12 +46,12 @@ async def execute_path_of_pain(cfg: Config) -> str:
     }
 
     logger.info("Attempting to init page environment...")
-    await address_root_page(root, header)
+    await address_root_page(root, header, session)
 
-    login_method = await load_config(portal_api, header)
+    login_method = await load_config(portal_api, header, session)
     logger.info("Fetched configuration data.")
 
-    online, info = await check_status(path_url, header)
+    online, info = await check_status(path_url, header, session)
     if online:
         return info
 
@@ -59,23 +59,28 @@ async def execute_path_of_pain(cfg: Config) -> str:
     logger.info("Fetched IP info: %s", ip)
 
     base_url = path_url if login_method == 0 else portal_api
-    await login(ip, cfg, base_url, login_method, header)
+    await login(ip, cfg, base_url, login_method, header, session)
     return "Login successful."
 
 
-async def address_root_page(root: str, header: dict[str, str]) -> None:
-    async with ClientSession(headers=header, timeout=ClientTimeout(total=5)) as session:
-        try:
-            async with session.get(root) as response:
-                if response.status == 200:
-                    logger.info("Page environment initialized.")
-                else:
-                    raise Exception(f"Unexpected status code: {response.status}")
-        except TimeoutError:
-            raise Exception(f"Connection to {root} timed out.")
+async def address_root_page(
+    root: str, header: dict[str, str], session: ClientSession
+) -> None:
+    try:
+        async with session.get(
+            root, headers=header, timeout=ClientTimeout(total=5)
+        ) as response:
+            if response.status == 200:
+                logger.info("Page environment initialized.")
+            else:
+                raise Exception(f"Unexpected status code: {response.status}")
+    except TimeoutError:
+        raise Exception(f"Connection to {root} timed out.")
 
 
-async def load_config(portal_api: str, header: dict[str, str]) -> int:
+async def load_config(
+    portal_api: str, header: dict[str, str], session: ClientSession
+) -> int:
     url = f"{portal_api}page/loadConfig"
     params = {
         "program_index": "I352nd1630892431",
@@ -91,7 +96,7 @@ async def load_config(portal_api: str, header: dict[str, str]) -> int:
 
     cfg = None
     try:
-        cfg = await jsonp(url, "dr1001", params, header)
+        cfg = await jsonp(session, url, "dr1001", params, header)
     except TimeoutError:
         raise Exception(f"Connection to {url} timed out.")
 
@@ -101,12 +106,14 @@ async def load_config(portal_api: str, header: dict[str, str]) -> int:
     return cfg["data"]["login_method"]
 
 
-async def check_status(path: str, header: dict[str, str]) -> tuple[bool, str]:
+async def check_status(
+    path: str, header: dict[str, str], session: ClientSession
+) -> tuple[bool, str]:
     url = f"{path}chkstatus"
 
     data = None
     try:
-        data = await jsonp(url, "dr1002", headers=header)
+        data = await jsonp(session, url, "dr1002", headers=header)
     except TimeoutError:
         raise Exception(f"Connection to {url} timed out.")
 
@@ -117,7 +124,12 @@ async def check_status(path: str, header: dict[str, str]) -> tuple[bool, str]:
 
 
 async def login(
-    ip: str, cfg: Config, base_url: str, login_method: int, header: dict[str, str]
+    ip: str,
+    cfg: Config,
+    base_url: str,
+    login_method: int,
+    header: dict[str, str],
+    session: ClientSession,
 ) -> None:
     login_url = f"{base_url}login"
 
@@ -140,7 +152,7 @@ async def login(
 
     result = None
     try:
-        result = await jsonp(login_url, "dr1003", params, header)
+        result = await jsonp(session, login_url, "dr1003", params, header)
     except TimeoutError:
         raise Exception(f"Connection to {login_url} timed out.")
 

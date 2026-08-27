@@ -49,22 +49,23 @@ def set_logger() -> None:
 def set_signal(loop: asyncio.AbstractEventLoop) -> None:
     import signal
 
+    shutdown_task = None
+
     async def exit_app():
-        tasks = asyncio.all_tasks(loop)
+        current_task = asyncio.current_task(loop)
+        tasks = [task for task in asyncio.all_tasks(loop) if task is not current_task]
 
         for task in tasks:
             task.cancel()
 
-        for task in tasks:
-            try:
-                await task
-            except asyncio.CancelledError:
-                pass
+        await asyncio.gather(*tasks, return_exceptions=True)
 
         loop.stop()
 
     def handler():
-        asyncio.ensure_future(exit_app())
+        nonlocal shutdown_task
+        if shutdown_task is None or shutdown_task.done():
+            shutdown_task = loop.create_task(exit_app())
 
     loop.add_signal_handler(signal.SIGINT, handler)
     loop.add_signal_handler(signal.SIGTERM, handler)

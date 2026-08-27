@@ -16,6 +16,7 @@ __all__ = ["jsonp"]
 
 
 async def jsonp(
+    session: ClientSession,
     url: str,
     name: str,
     params: Optional[dict[str, str]] = None,
@@ -25,6 +26,7 @@ async def jsonp(
     Fetches a JSONP response from the given URL with parameters and decodes it.
 
     Args:
+            session (ClientSession): The shared HTTP client session.
             url (str): The URL to send the GET request to.
             callback_name (str): The expected JSONP callback name.
             params (Optional[dict[str, str]], optional): The query parameters for the GET request.
@@ -57,9 +59,8 @@ async def jsonp(
     else:
         full_url = f"{url}?{param_url}"
 
-    async with ClientSession(
-        headers=headers, timeout=ClientTimeout(total=5)
-    ) as session:
-        async with session.get(full_url) as response:
-            text = await response.text()
-            return decode(text, name=name)
+    async with session.get(
+        full_url, headers=headers, timeout=ClientTimeout(total=5)
+    ) as response:
+        text = await response.text()
+        return decode(text, name=name)

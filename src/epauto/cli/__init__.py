@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import click
 from pathlib import Path
@@ -16,9 +17,7 @@ from ..loop import execute
     default="config.toml",
     help="Path to configuration file.",
 )
-@click.version_option(
-    __version__, package_name="epauto", message="%(package)s %(version)s"
-)
+@click.version_option(message="%(package)s %(version)s")
 def main(config: Path):
     if not config.exists():
         click.echo(
@@ -38,10 +37,13 @@ def main(config: Path):
         sys.exit(1)
 
     loop = bootstrap()
+    main_task = loop.create_task(execute(cfg))
 
     try:
-        loop.create_task(execute(cfg))
         loop.run_forever()
     finally:
+        if not main_task.done():
+            main_task.cancel()
+        loop.run_until_complete(asyncio.gather(main_task, return_exceptions=True))
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
