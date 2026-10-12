@@ -3,7 +3,6 @@ import sys
 import click
 from pathlib import Path
 
-from .. import __version__
 from .bootstrap import bootstrap
 from ..config import Config
 from ..loop import execute
@@ -17,7 +16,7 @@ from ..loop import execute
     default="config.toml",
     help="Path to configuration file.",
 )
-@click.version_option(message="%(package)s %(version)s")
+@click.version_option(None, "-v", "--version", message="%(package)s %(version)s")
 def main(config: Path):
     if not config.exists():
         click.echo(
