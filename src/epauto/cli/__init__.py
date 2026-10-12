@@ -38,12 +38,27 @@ def main(config: Path):
 
     loop = bootstrap()
     main_task = loop.create_task(execute(cfg))
+    shutting_down = False
+
+    def stop_on_completion(task):
+        if not shutting_down:
+            loop.stop()
+
+    main_task.add_done_callback(stop_on_completion)
 
     try:
         loop.run_forever()
     finally:
+        shutting_down = True
+        main_task.remove_done_callback(stop_on_completion)
         if not main_task.done():
             main_task.cancel()
         loop.run_until_complete(asyncio.gather(main_task, return_exceptions=True))
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
+
+    if not main_task.cancelled():
+        try:
+            main_task.result()
+        except Exception as e:
+            raise click.ClickException(f"Execution failed: {e}") from e

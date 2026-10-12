@@ -16,10 +16,12 @@ logger = logging.getLogger(__name__)
 async def execute(cfg: Config, session: ClientSession) -> LoopState:
     while True:
         try:
-            async with session.ws_connect(
-                cfg.connect.connect_url,
-                heartbeat=cfg.connect.connect_ping_interval,
-            ) as ws:
+            async with asyncio.timeout(cfg.connect.connect_ping_timeout):
+                ws = await session.ws_connect(
+                    cfg.connect.connect_url,
+                    heartbeat=cfg.connect.connect_ping_interval,
+                )
+            async with ws:
                 await connect_handler(ws, cfg)
         except TimeoutError:
             logger.error("WebSocket connection Timeout.")
