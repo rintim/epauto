@@ -24,7 +24,7 @@ Usage: epauto [OPTIONS]
 
 Options:
   -c, --config PATH  Path to configuration file.
-  -V, --version      Print epauto version.
+  -v, --version      Print epauto version.
   --help             Show this message and exit.
 ```
 
