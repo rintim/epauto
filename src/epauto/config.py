@@ -82,6 +82,10 @@ class Config:
 
         if test_url is None:
             raise ValueError("connect.test_url is required in configuration.")
+        # Plain http can be hijacked by the portal and answered with 200,
+        # which would be mistaken for a working connection.
+        if urlparse(str(test_url)).scheme.lower() != "https":
+            raise ValueError("connect.test_url must be an https URL.")
         if connect_url is None:
             raise ValueError("connect.connect_url is required in configuration.")
 
