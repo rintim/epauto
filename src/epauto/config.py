@@ -2,6 +2,8 @@
 Structs and utility functions to load toml config for epauto.
 """
 
+from __future__ import annotations
+
 import tomllib
 from dataclasses import dataclass
 from enum import Enum
