@@ -91,6 +91,9 @@ class Config:
         auto_close_enable = auto_close.get("enable", False)
         auto_close_duration = auto_close.get("duration", 570)
 
+        if auto_close_enable and auto_close_duration <= 0:
+            raise ValueError("connect.auto-close.duration must be greater than 0.")
+
         auto_close_cfg = ConnectAutoCloseConfig(
             enable=auto_close_enable,
             duration=auto_close_duration,
