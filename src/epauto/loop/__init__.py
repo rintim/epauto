@@ -44,6 +44,5 @@ async def execute(cfg: Config):
                     next_state = await executor(cfg, session)
                     state = next_state
 
-    logger.debug("Execution loop has ended.")
-    loop = asyncio.get_event_loop()
-    loop.stop()
+    # Here is unreachable now
+    # as EXECUTOR_MAP holds no None values, and INIT has its own case.
