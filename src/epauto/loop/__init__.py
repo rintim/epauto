@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from aiohttp import ClientSession, ClientTimeout
+from aiohttp import ClientSession
 
 from . import check, connect, login
 from .state import LoopState
