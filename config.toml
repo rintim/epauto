@@ -6,7 +6,8 @@ retry_period_max = 300
 [login]
 url = "https://example.com"
 username = "username"
-password = "password"
+# Prefer the EPAUTO_PASSWORD environment variable, which overrides this field.
+# password = "password"
 type = 0
 
 [connect]

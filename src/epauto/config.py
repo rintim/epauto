@@ -4,12 +4,15 @@ Structs and utility functions to load toml config for epauto.
 
 from __future__ import annotations
 
+import os
 import tomllib
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
+
+PASSWORD_ENV = "EPAUTO_PASSWORD"
 
 
 @dataclass
@@ -59,15 +62,22 @@ class Config:
             raise ValueError("login section is required in configuration.")
         if "url" not in login:
             raise ValueError("login.url is required in configuration.")
-        if "username" not in login or "password" not in login:
+        if "username" not in login:
+            raise ValueError("login.username is required in configuration.")
+
+        # The environment variable takes precedence, so that the password
+        # does not have to be stored in the configuration file.
+        password = os.environ.get(PASSWORD_ENV) or login.get("password")
+        if not password:
             raise ValueError(
-                "login.username and login.password are required in configuration."
+                f"Password is required: set the {PASSWORD_ENV} environment "
+                "variable or login.password in configuration."
             )
 
         login_cfg = LoginConfig(
             url=LoginURL(login["url"]),
             username=login["username"],
-            password=login["password"],
+            password=password,
             type=LoginType(login.get("type", 0)),
         )
 
