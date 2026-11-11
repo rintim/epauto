@@ -3,7 +3,7 @@ Entrypoint for epauto.
 """
 
 import sys
-from . import cli
+from epauto import cli
 
 
 if __name__ == "__main__":
