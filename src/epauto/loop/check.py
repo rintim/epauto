@@ -13,6 +13,7 @@ async def execute(cfg: Config, session: ClientSession) -> LoopState:
     try:
         async with session.get(
             cfg.connect.test_url,
+            allow_redirects=False,
             timeout=ClientTimeout(total=cfg.connect.test_timeout),
         ) as response:
             if response.status == 200:

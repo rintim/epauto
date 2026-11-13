@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from aiohttp import ClientSession, ClientTimeout
 
@@ -12,27 +11,21 @@ logger = logging.getLogger(__name__)
 
 
 async def execute(cfg: Config, session: ClientSession) -> LoopState:
-    retry_period = cfg.base.retry_period
 
-    while True:
-        try:
-            message = await execute_path_of_pain(cfg, session)
+    try:
+        message = await execute_path_of_pain(cfg, session)
 
-            logger.info(message)
-            logger.info("Transitioning to CHECK state to retry.")
-            return LoopState.CHECK
+        logger.info(message)
 
-        except Exception as e:
-            logger.error(
-                'Logging failed: %s("%s"). Retrying in %d seconds...',
-                type(e).__name__,
-                e,
-                retry_period,
-            )
-            await asyncio.sleep(retry_period)
-            retry_period += cfg.base.retry_period_diff
-            if retry_period > cfg.base.retry_period_max:
-                retry_period = cfg.base.retry_period_max
+    except Exception as e:
+        logger.error(
+            "Login failed: %s",
+            str(e).replace(cfg.login.password, "[REDACTED]")
+            if type(e) is Exception
+            else type(e).__name__,
+        )
+
+    return LoopState.CHECK
 
 
 async def execute_path_of_pain(cfg: Config, session: ClientSession) -> str:
@@ -101,7 +94,7 @@ async def load_config(
         raise Exception(f"Connection to {url} timed out.")
 
     if cfg["code"] != 1:
-        raise Exception(f"Failed to fetch configuration: {cfg}")
+        raise Exception("Failed to fetch portal configuration.")
 
     return cfg["data"]["login_method"]
 
@@ -157,4 +150,4 @@ async def login(
         raise Exception(f"Connection to {login_url} timed out.")
 
     if result["result"] != 1:
-        raise Exception(f"Login failed: {result}")
+        raise Exception("Portal rejected login.")

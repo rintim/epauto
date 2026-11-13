@@ -85,8 +85,6 @@ $ EPAUTO_PASSWORD="PASSWORD" epauto
 | `retry_period_diff` | 否 | `5` | 每次重试后等待时间的增量(秒) |
 | `retry_period_max` | 否 | `300` | 等待时间的上限(秒) |
 
-重试间隔同时用于登录失败后的重试，以及WebSocket被服务端断开后的重连
-
 ## 安装
 
 epauto仅支持Linux

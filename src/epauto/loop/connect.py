@@ -13,44 +13,26 @@ __all__ = ["execute"]
 logger = logging.getLogger(__name__)
 
 
-async def execute(cfg: Config, session: ClientSession) -> LoopState:
-    retry_period = cfg.base.retry_period
+async def execute(cfg: Config, session: ClientSession) -> tuple[LoopState, float]:
     loop = asyncio.get_running_loop()
+    connected_at = None
+    try:
+        async with asyncio.timeout(cfg.connect.connect_ping_timeout):
+            ws = await session.ws_connect(
+                cfg.connect.connect_url,
+                heartbeat=cfg.connect.connect_ping_interval,
+            )
+        connected_at = loop.time()
+        async with ws:
+            auto_closed = await connect_handler(ws, cfg)
+    except Exception as e:
+        logger.error('WebSocket connection failed: %s("%s")', type(e).__name__, e)
+        return LoopState.CHECK, 0 if connected_at is None else loop.time() - connected_at
 
-    while True:
-        started = loop.time()
-        try:
-            async with asyncio.timeout(cfg.connect.connect_ping_timeout):
-                ws = await session.ws_connect(
-                    cfg.connect.connect_url,
-                    heartbeat=cfg.connect.connect_ping_interval,
-                )
-            async with ws:
-                auto_closed = await connect_handler(ws, cfg)
-        except TimeoutError:
-            logger.error("WebSocket connection Timeout.")
-            return revert_to_checking()
-
-        except Exception as e:
-            logger.error('WebSocket connection failed: %s("%s")', type(e).__name__, e)
-            return revert_to_checking()
-
-        if auto_closed:
-            retry_period = cfg.base.retry_period
-            continue
-
-        # Closed by the server: back off, growing the delay while connections
-        # keep dying sooner than the current delay.
-        if loop.time() - started > retry_period:
-            retry_period = cfg.base.retry_period
-
-        logger.info(
-            "Connection closed by server. Reconnecting in %d seconds...", retry_period
-        )
-        await asyncio.sleep(retry_period)
-        retry_period = min(
-            retry_period + cfg.base.retry_period_diff, cfg.base.retry_period_max
-        )
+    return (
+        LoopState.CONNECT if auto_closed else LoopState.CHECK,
+        loop.time() - connected_at,
+    )
 
 
 async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> bool:
@@ -89,8 +71,3 @@ async def connect_handler(ws: ClientWebSocketResponse, cfg: Config) -> bool:
         return True
 
     return False
-
-
-def revert_to_checking() -> LoopState:
-    logger.info("Reverting to CHECK state.")
-    return LoopState.CHECK
